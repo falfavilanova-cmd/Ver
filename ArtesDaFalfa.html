@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coisas Gostosas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000000;
+      --surface: #141417;
+      --border: rgba(255,255,255,0.07);
+      --text: #e8e6e0;
+      --muted: #6b6965;
+      --accent: #ff8dd9;
+      --accent-dim: rgba(200,240,74,0.12);
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
+      
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      line-height: 1.7;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /*Cursor Customizado*/
+    .cursor {
+      position: fixed;
+      top: 0; left: 0;
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 38px; height: 38px;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: left 0.12s ease, top 0.12s ease, width 0.25s ease, height 0.25s ease, opacity 0.3s ease;
+      opacity: 0.5;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* Fundo animadinho */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      /*background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");*/
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0.1;
+      margin: 0;
+      height: 100vh; 
+      background: url("falfa.png") repeat;
+      background-size: cover;
+      animation: moverFundo 30s linear infinite;
+    }
+
+    /*Layout*/
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /*Nav*/
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      padding: 24px 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      background: rgba(12,12,14,0.7);
+    }
+    nav .inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .logo span { color: var(--accent); }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 32px;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--accent); }
+
+    
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding-top: 100px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+      animation: fadeUp 0.7s ease both;
+    }
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.8rem, 5vw, 5rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+    .hero-title .line { display: block; overflow: hidden; }
+    .hero-title em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero-desc {
+      margin-top: 24px;
+      color: var(--muted);
+      max-width: 420px;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+    .hero-cta {
+      margin-top: 40px;
+      display: flex;
+      gap: 16px;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 100px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0c0c0e;
+      font-weight: 400;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,240,74,0.25); }
+    .btn-ghost {
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    
+    .hero-visual {
+      position: relative;
+      height: 420px;
+      animation: fadeIn 1s 0.4s ease both;
+    }
+    .hero-card {
+      position: absolute;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      font-size: 0.78rem;
+    }
+    .hero-card.card-main {
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: linear-gradient(145deg, #1a1a1f, #111113);
+    }
+    .card-blob {
+      position: absolute;
+      top: 30px; right: 30px;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(200,240,74,0.2) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(20px);
+    }
+    .card-label { color: var(--muted); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+    .card-value { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; }
+    .card-row { display: flex; gap: 32px; }
+    .hero-card.card-float-1 {
+      top: 20px; right: -20px;
+      width: 180px;
+      background: var(--accent-dim);
+      border-color: rgba(200,240,74,0.2);
+    }
+    .hero-card.card-float-2 {
+      bottom: 40px; left: -20px;
+      width: 200px;
+    }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+    .float-anim-2 { animation: float 5s 1s ease-in-out infinite; }
+    .status-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: pulse 2s infinite;
+    }
+
+   
+    section { padding: 100px 0; }
+    .section-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .section-head { margin-bottom: 56px; }
+
+    /* Sobre */
+    #about { border-top: 1px solid var(--border); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .about-text p { color: var(--muted); margin-top: 20px; }
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 32px;
+    }
+    .skill-tag {
+      padding: 6px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .skill-tag:hover { border-color: var(--accent); color: var(--accent); }
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color 0.2s;
+    }
+    .stat-box:hover { border-color: rgba(200,240,74,0.3); }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-desc { color: var(--muted); font-size: 0.78rem; margin-top: 6px; }
+
+    /* ── Projects ── */
+    #projects { border-top: 1px solid var(--border); }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+    }
+    .project-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .project-card:hover { border-color: rgba(200,240,74,0.25); transform: translateY(-4px); }
+    .project-card:hover::after { transform: scaleX(1); }
+    .project-icon {
+      width: 44px; height: 44px;
+      background: var(--accent-dim);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    .project-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+    }
+    .project-desc { color: var(--muted); font-size: 0.82rem; flex: 1; }
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .project-tag {
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      border-radius: 100px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+    .project-arrow {
+      position: absolute;
+      top: 24px; right: 24px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      transition: all 0.2s;
+    }
+    .project-card:hover .project-arrow { color: var(--accent); transform: translate(3px, -3px); }
+
+    /*Contato*/
+    #contact { border-top: 1px solid var(--border); text-align: center; }
+    .contact-inner { max-width: 600px; margin: 0 auto; }
+    .contact-inner .section-title { font-size: clamp(2rem, 4vw, 3.5rem); }
+    .contact-inner p { color: var(--muted); margin-top: 16px; }
+    .contact-cta { margin-top: 40px; display: flex; justify-content: center; gap: 16px; }
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .contact-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .contact-link:hover { color: var(--accent); }
+
+    
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    /*Animacoes*/
+    @keyframes moverFundo {
+      from {
+        background-position: 0 0;
+      }
+      to {
+        background-position: 1000px 0;
+      }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-14px); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.5; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .hero-grid, .about-grid { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="inner">
+      <a href="#" class="logo">Falfa<span>.</span>UUP</a>
+      <ul>
+        <li><a href="#about">Se</a></li>
+        <li><a href="#projects">Clicar</a></li>
+        <li><a href="#contact">É gay</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <span class="hero-tag">✦ Coisas Gostosas Estão Abaixo</span>
+          <h1 class="hero-title">
+            <span class="line">Oieee, Aqui é a</span>
+            <span class="line"><em>Falfa</em></span>
+          </h1>
+          <p class="hero-desc">
+            Atenção, seus consumidores de açúcar processado e chocolate de procedência duvidosa.
+          </p>
+          <div class="hero-cta">
+            <a href="#projects" class="btn btn-primary">Detalhes do Ovo</a>
+            <a href="#contact" class="btn btn-ghost">Mensagem Bacana</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="hero-card card-main">
+            <div class="card-blob"></div>
+            <div class="card-row">
+              <div>
+                <div class="card-label">sh</div>
+                <div class="card-value">Eis o</div>
+              </div>
+              <div>
+                <div class="card-label">sh</div>
+                <div class="card-value">Ovo Tanajura Gourmet</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-card card-float-1 float-anim">
+            <div class="card-label"><span class="status-dot"></span>Cebolas</div>
+            <div style="color: var(--accent); font-family:'Syne',sans-serif; font-weight:700;">Você deveria</div>
+            <div style="color: var(--muted); font-size:0.72rem; margin-top:4px;">Dar aquela mamada!</div>
+          </div>
+
+          <div class="hero-card card-float-2 float-anim-2">
+            <div class="card-label">Presta atenção</div>
+            <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem;">Desce, para ver mais :3</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text">
+          <div class="section-label">Detalhes do Ovo de Páscoa Aprovado Pela Chefe do Conselho:</div>
+          <h2 class="section-title">PÁSCOA DE VERDADE<br/>🐜</h2>
+          <p>
+            ​Sustentabilidade Radical: Nós não usamos leite, nós usamos o que a natureza nos dá (Tipo terra, fezes e essas paradas).
+          </p>
+          <p>
+            ​Experiência Sensorial: É o equilíbrio perfeito entre o doce do chocolate, o cremoso do recheio e o trauma psicológico de mastigar patas e asas.
+          </p>
+          <P>
+            Só Pra Quem Pode: Comer isso prova que você não apenas só não tem cérebro, mas também uma total ausência de autopreservação.
+          </P>
+          <div class="skills-list">
+            <!-- Adicione ou remova tecnologias à vontade -->
+            <span class="skill-tag">Linux</span>
+            <span class="skill-tag">Ele vai</span>
+            <span class="skill-tag">Senta_Palhaço</span>
+            <span class="skill-tag">Cebola azeda</span>
+            <span class="skill-tag">Sergio</span>
+            <span class="skill-tag">Socorro</span>
+            <span class="skill-tag">blub</span>
+          </div>
+        </div>
+
+        <div class="about-stats">
+          <div class="stat-box">
+            <div class="stat-num">Meus docinhos</div>
+            <div class="stat-desc">NÃO É PARA OS FRACOS. Esqueçam o whey protein, a verdadeira força está em mastigar asas e patas que ainda parecem ter vida.</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">Para vocês</div>
+            <div class="stat-desc">Desejo que vocês tenham coragem. Coragem para parar de ser previsíveis e abraçar o caos.</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">♥Detalhe♥</div>
+            <div class="stat-desc">Eu amo vocês de ♥</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">☕</div>
+            <div class="stat-desc">Bebam Café.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-label">O meu presente a vocês</div>
+        <h2 class="section-title">♥<br/>Com muito amor</h2>
+      </div>
+      <div class="projects-grid">
+
+        <!-- Projeto 1 -->
+        <a href="#" class="project-card">
+          <span class="project-arrow">↗</span>
+          <div class="project-icon">☻</div>
+          <img src="OVO.jpg" alt="Um cachorro feliz" width="200" height="200">
+          <div class="project-title">Ovo Tanajura Gourmet</div>
+          <p class="project-desc">Nós não dependemos de cacau cultivado, nós colhemos nossas próprias coberturas diretamente do formigueiro após a chuva. É do campo para a mesa, mas o campo está voando e picando.</p>
+          <div class="project-tags">
+            <span class="project-tag">Blub</span>
+            <span class="project-tag">Blub</span>
+          </div>
+        </a>
+
+        <!-- Projeto 2 -->
+        <a href="#" class="project-card">
+          <span class="project-arrow">↗</span>
+          <div class="project-icon">♥</div>
+          <img src="OVO1.jpg" alt="Um cachorro feliz" width="200" height="200">
+          <div class="project-title">Delicioso</div>
+          <p class="project-desc">O cremoso do recheio contra o croc-croc inconfundível do exoesqueleto de uma tanajura fêmea bem fornida. É uma experiência sensorial que vocês não têm coragem de ter.</p>
+          <div class="project-tags">
+            <span class="project-tag">Sergio</span>
+            <span class="project-tag">É gay</span>
+          </div>
+        </a>
+
+        <!-- Projeto 3 -->
+        <a href="#" class="project-card">
+          <span class="project-arrow">↗</span>
+          <div class="project-icon">!!</div>
+          <img src="fafa.png" alt="Um cachorro feliz" width="300" height="200">
+          <div class="project-title">Prequiça de programar</div>
+          <p class="project-desc">FOUDASE</p>
+          <div class="project-tags">
+            <span class="project-tag">IDAI?</span>
+            <span class="project-tag">CANSEI</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-inner">
+        <div class="section-label">Deu trabalho d+</div>
+        <div class="section-label">Feliz Páscoa</div>
+        <div class="section-label"></div>
+        <h2 class="section-title">Amo<br/>todos vocês</h2>
+        </div>
+        <div class="contact-links">
+          <a href="https://linkedin.com/" target="_blank" class="contact-link">Arrume o que fazer aqui!</a>
+          <a href="https://twitter.com/" target="_blank" class="contact-link">Sofra aqui</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>© 2026 Falfa — feito com dedicação. The Zoeira Never Ends</p>
+    </div>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top  = my + 'px';
+    });
+
+    // Ring follows with lag
+    function animRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(animRing);
+    }
+    animRing();
+
+    // Cursor grow on hover
+    document.querySelectorAll('a, button, .project-card, .stat-box, .skill-tag').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '20px';
+        cursor.style.height = '20px';
+        ring.style.width = '56px';
+        ring.style.height = '56px';
+        ring.style.opacity = '0.25';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '10px';
+        cursor.style.height = '10px';
+        ring.style.width = '38px';
+        ring.style.height = '38px';
+        ring.style.opacity = '0.5';
+      });
+    });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.project-card, .stat-box').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease, border-color 0.25s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
